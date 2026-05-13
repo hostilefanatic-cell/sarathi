@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sarathi - Bhagavad Gita Vocabulary Explorer</title>
+    <link rel="stylesheet" href="css/fonts.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <h1>GEETHA SARATHI</h1>
+            </div>
+            <div class="language-selector">
+                <label for="language">Language:</label>
+                <select id="language" class="language-dropdown">
+                    <option value="sanskrit">संस्कृतम् (Sanskrit)</option>
+                    <option value="kannada">ಕನ್ನಡ (Kannada)</option>
+                    <option value="tamil">தமிழ் (Tamil)</option>
+                    <option value="english">English</option>
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="hero">
+            <h2 class="hero-title">सर्वधर्मान्परित्यज्य मामेकं शरणं व्रज</h2>
+            <p class="hero-subtitle">Explore the vocabulary of the Bhagavad Gita</p>
+            <p class="hero-description">Discover words and their occurrences across all 18 chapters</p>
+        </section>
+
+        <section class="options-container">
+            <div class="option-card" onclick="window.location.href='random.html'">
+                <div class="option-icon">📚</div>
+                <h3 class="option-title">Generate Random Word</h3>
+                <p class="option-description">Discover a random word from the Bhagavad Gita and see where it appears</p>
+            </div>
+
+            <div class="option-card" onclick="window.location.href='search.html'">
+                <div class="option-icon">🔍</div>
+                <h3 class="option-title">Search Specific Word</h3>
+                <p class="option-description">Find where a word appears across all chapters and verses</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>Made with ♥ for Sanskrit learners</p>
+        <p class="footer-note">Source: <a href="https://stotranidhi.com" target="_blank">StotraNidhi</a></p>
+    </footer>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
