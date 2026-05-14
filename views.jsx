@@ -109,20 +109,31 @@ function ExploreView({ index, lang }) {
   const [current, setCurrent] = useState(null);
   const [revealed, setRevealed] = useState(false);
 
+  // Pool of candidate words — scoped to the selected chapter range.
+  // Frequency buckets are computed FROM the in-range verse count, not the
+  // global count, so "Rare 1–2" really means "appears 1–2 times in chapters
+  // {from}..{to}".
   const filteredKeys = useMemo(() => {
     if (!index) return [];
-    return Object.keys(index).filter(k => {
-      const o = index[k].occurrences;
+    const out = [];
+    for (const k of Object.keys(index)) {
+      // count verses in the selected range
+      let inRange = 0;
+      const verses = index[k].verses;
+      for (let i = 0; i < verses.length; i++) {
+        const c = verses[i].chapter;
+        if (c >= from && c <= to) inRange++;
+      }
+      if (inRange === 0) continue;
       const inFilter =
         filter === 'all' ||
-        (filter === 'rare' && o >= 1 && o <= 2) ||
-        (filter === 'uncommon' && o >= 3 && o <= 5) ||
-        (filter === 'common' && o >= 6 && o <= 10) ||
-        (filter === 'frequent' && o > 10);
-      if (!inFilter) return false;
-      if (from === 1 && to === 18) return true;
-      return index[k].verses.some(v => v.chapter >= from && v.chapter <= to);
-    });
+        (filter === 'rare' && inRange >= 1 && inRange <= 2) ||
+        (filter === 'uncommon' && inRange >= 3 && inRange <= 5) ||
+        (filter === 'common' && inRange >= 6 && inRange <= 10) ||
+        (filter === 'frequent' && inRange > 10);
+      if (inFilter) out.push(k);
+    }
+    return out;
   }, [index, filter, from, to]);
 
   const surface = useCallback(() => {
@@ -208,7 +219,7 @@ function ExploreView({ index, lang }) {
               <div className="specimen-face front">
                 <div className="specimen-meta">
                   <span><span className="dot"></span>Specimen · {LANGUAGES[lang].name}</span>
-                  <span>{current ? 'Frequency · ' + current.data.occurrences : '—'}</span>
+                  <span>{current ? 'Frequency · ' + versesInRange.length + (versesInRange.length === current.data.occurrences ? '' : ' / ' + current.data.occurrences) : '—'}</span>
                 </div>
 
                 <div className="specimen-word-wrap">
@@ -257,7 +268,7 @@ function ExploreView({ index, lang }) {
                         wordBreak: 'break-word',
                         overflowWrap: 'anywhere'
                       }}>{current.word}</span>
-                      appears in <strong style={{ fontWeight: 500, fontStyle: 'normal', color: 'var(--accent)' }}>{current.data.occurrences}</strong> verse{current.data.occurrences === 1 ? '' : 's'} across the Gītā.
+                      appears in <strong style={{ fontWeight: 500, fontStyle: 'normal', color: 'var(--accent)' }}>{versesInRange.length}</strong> verse{versesInRange.length === 1 ? '' : 's'}{from === 1 && to === 18 ? ' across the Gītā' : ` in chapters ${from}–${to}`}{versesInRange.length !== current.data.occurrences ? ` · ${current.data.occurrences} total` : ''}.
                     </div>
 
                     <div className="concordance" style={{ marginTop: 0, paddingTop: 24 }}>
