@@ -609,3 +609,30 @@
 .view {
   animation: fadeUp 0.35s ease;
 }
+
+/* ===== Mobile — explore + search ===== */
+@media (max-width: 720px) {
+  .explore { padding: 24px 0 32px; }
+  .controls { position: static; gap: 20px; }
+  .specimen { padding: 28px 22px 24px; min-height: 360px; }
+  .specimen-word { font-size: clamp(42px, 14vw, 80px); }
+  .specimen-meta { font-size: 9px; flex-wrap: wrap; gap: 6px; }
+  .chapters { height: 44px; gap: 3px; }
+  .chap-num { font-size: 8px; }
+
+  .verse { padding: 22px 0; gap: 6px; }
+  .verse-num { font-size: 28px; }
+  .verse-chap { font-size: 14px; }
+  .verse-body { font-size: 17px; line-height: 1.7; }
+  .verse-body[data-script="english"] { font-size: 18px; }
+
+  .search { padding: 28px 0 24px; }
+  .search-input { padding: 8px 0; }
+  .suggest-grid { grid-template-columns: repeat(2, 1fr); }
+  .suggest-tile { padding: 16px 14px; }
+  .suggest-word { font-size: 22px; }
+
+  .results-summary { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .match-head { padding: 18px 0 8px; gap: 10px; }
+  .match-word { font-size: 22px; }
+}
