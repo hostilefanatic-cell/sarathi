@@ -1,58 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sarathi - Bhagavad Gita Vocabulary Explorer</title>
-    <link rel="stylesheet" href="css/fonts.css">
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/components.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sarathi — Bhagavad Gītā</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+Devanagari:wght@400;500;600&family=Noto+Sans+Kannada:wght@400;500;600&family=Noto+Sans+Tamil:wght@400;500;600&family=Noto+Serif+Devanagari:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="sarathi.css" />
+<link rel="stylesheet" href="sarathi-views.css" />
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 </head>
 <body>
-    <header class="header">
-        <div class="header-content">
-            <div class="logo">
-                <h1>GEETHA SARATHI</h1>
-            </div>
-            <div class="language-selector">
-                <label for="language">Language:</label>
-                <select id="language" class="language-dropdown">
-                    <option value="sanskrit">संस्कृतम् (Sanskrit)</option>
-                    <option value="kannada">ಕನ್ನಡ (Kannada)</option>
-                    <option value="tamil">தமிழ் (Tamil)</option>
-                    <option value="english">English</option>
-                </select>
-            </div>
-        </div>
-    </header>
+<div id="root"></div>
 
-    <main class="main-content">
-        <section class="hero">
-            <h2 class="hero-title">सर्वधर्मान्परित्यज्य मामेकं शरणं व्रज</h2>
-            <p class="hero-subtitle">Explore the vocabulary of the Bhagavad Gita</p>
-            <p class="hero-description">Discover words and their occurrences across all 18 chapters</p>
-        </section>
+<script>
+window.__TWEAK_DEFAULTS__ = /*EDITMODE-BEGIN*/{
+  "theme": "ink",
+  "showOrnament": true,
+  "density": "comfortable",
+  "displaySerif": true
+}/*EDITMODE-END*/;
+</script>
 
-        <section class="options-container">
-            <div class="option-card" onclick="window.location.href='random.html'">
-                <div class="option-icon">📚</div>
-                <h3 class="option-title">Generate Random Word</h3>
-                <p class="option-description">Discover a random word from the Bhagavad Gita and see where it appears</p>
-            </div>
-
-            <div class="option-card" onclick="window.location.href='search.html'">
-                <div class="option-icon">🔍</div>
-                <h3 class="option-title">Search Specific Word</h3>
-                <p class="option-description">Find where a word appears across all chapters and verses</p>
-            </div>
-        </section>
-    </main>
-
-    <footer class="footer">
-        <p>Made with ♥ for Sanskrit learners</p>
-        <p class="footer-note">Source: <a href="https://stotranidhi.com" target="_blank">StotraNidhi</a></p>
-    </footer>
-
-    <script src="js/app.js"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="components.jsx"></script>
+<script type="text/babel" src="views.jsx"></script>
+<script type="text/babel" src="app.jsx"></script>
 </body>
 </html>
