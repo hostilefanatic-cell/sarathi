@@ -109,18 +109,75 @@
 }
 
 /* Specimen card — the word */
+.specimen-stage {
+  perspective: 1800px;
+  position: relative;
+}
 .specimen {
   background: var(--paper-2);
   border: 1px solid var(--rule);
   border-radius: 4px;
-  padding: 56px 64px 48px;
   position: relative;
   min-height: 520px;
+  transform-style: preserve-3d;
+  transition: transform 0.7s cubic-bezier(0.7, 0, 0.2, 1);
+  cursor: pointer;
+}
+.specimen.flipped { transform: rotateY(180deg); }
+.specimen:hover:not(.empty) { box-shadow: 0 24px 60px -30px rgba(0,0,0,0.5); }
+
+.specimen-face {
+  position: absolute;
+  inset: 0;
+  padding: 56px 64px 48px;
   display: flex;
   flex-direction: column;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  border-radius: 4px;
+  transition: opacity 0s linear 0.35s;
 }
+.specimen-face.front {
+  transform: rotateY(0deg) translateZ(1px);
+  background: var(--paper-2);
+  opacity: 1;
+}
+.specimen-face.back {
+  transform: rotateY(180deg);
+  background: var(--paper-3);
+  border: 1px solid var(--rule);
+  opacity: 0;
+}
+.specimen.flipped .specimen-face.front { opacity: 0; }
+.specimen.flipped .specimen-face.back  { opacity: 1; }
 @media (max-width: 700px) {
-  .specimen { padding: 36px 24px 32px; min-height: 440px; }
+  .specimen { min-height: 440px; }
+  .specimen-face { padding: 36px 24px 32px; }
+}
+
+.flip-hint {
+  position: absolute;
+  bottom: 28px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  pointer-events: none;
+}
+.flip-hint .pulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 1.8s ease-in-out infinite;
 }
 
 .specimen-meta {
@@ -153,16 +210,19 @@
   justify-content: center;
   padding: 32px 0;
   text-align: center;
+  width: 100%;
+  min-width: 0;
 }
 
 .specimen-word {
   font-family: var(--font-devanagari);
-  font-size: clamp(56px, 9vw, 120px);
   font-weight: 500;
   line-height: 1.1;
   color: var(--ink);
   letter-spacing: -0.005em;
   cursor: text;
+  /* font-size is controlled by FitText at runtime */
+  max-width: 100%;
 }
 .specimen-word[data-script="kannada"] { font-family: var(--font-kannada); }
 .specimen-word[data-script="tamil"] { font-family: var(--font-tamil); }

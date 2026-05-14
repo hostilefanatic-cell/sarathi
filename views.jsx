@@ -68,22 +68,32 @@ function HomeOrnament({ lang }) {
       ak: 'ஓம்'
     },
     english: {
-      lines: ['Abandon all duties,', 'come to me alone for shelter.'],
+      lines: ['sarvadharmān parityajya', 'mām ekaṁ śaraṇaṁ vraja ।'],
       ref: 'Bhagavad Gītā · 18.66',
-      ak: '॥'
+      ak: 'oṁ'
     }
   };
   const v = verses[lang] || verses.sanskrit;
   const script = LANGUAGES[lang].script;
+  const fontFamilyMap = {
+    sanskrit: 'var(--font-devanagari)',
+    kannada: 'var(--font-kannada)',
+    tamil: 'var(--font-tamil)',
+    english: 'var(--font-serif)'
+  };
+  const ornamentStyle = {
+    fontFamily: fontFamilyMap[script],
+    fontStyle: script === 'english' ? 'italic' : 'normal'
+  };
 
   return (
     <div className="ornament">
-      <span className="ornament-aksara">{v.ak}</span>
+      <span className="ornament-aksara" style={{ fontFamily: fontFamilyMap[script], fontStyle: script === 'english' ? 'italic' : 'normal' }}>{v.ak}</span>
       <span className="ornament-corner tl"></span>
       <span className="ornament-corner tr"></span>
       <span className="ornament-corner bl"></span>
       <span className="ornament-corner br"></span>
-      <div className="ornament-verse" data-script={script} style={{ fontFamily: 'var(--font-' + script + ', var(--font-devanagari))' }}>
+      <div className="ornament-verse" data-script={script} style={ornamentStyle}>
         {v.lines.map((line, i) => <span key={i} className="line">{line}</span>)}
       </div>
       <div className="ornament-citation">{v.ref}</div>
@@ -97,6 +107,7 @@ function ExploreView({ index, lang }) {
   const [from, setFrom] = useState(1);
   const [to, setTo] = useState(18);
   const [current, setCurrent] = useState(null);
+  const [revealed, setRevealed] = useState(false);
 
   const filteredKeys = useMemo(() => {
     if (!index) return [];
@@ -116,9 +127,13 @@ function ExploreView({ index, lang }) {
 
   const surface = useCallback(() => {
     if (!filteredKeys.length) return;
-    const word = filteredKeys[Math.floor(Math.random() * filteredKeys.length)];
-    setCurrent({ word, data: index[word] });
-  }, [filteredKeys, index]);
+    setRevealed(false); // flip back first
+    // small delay so the user sees the flip-back happen before the word changes
+    setTimeout(() => {
+      const word = filteredKeys[Math.floor(Math.random() * filteredKeys.length)];
+      setCurrent({ word, data: index[word] });
+    }, current ? 350 : 0);
+  }, [filteredKeys, index, current]);
 
   // surface a first word as soon as index loads
   useEffect(() => {
@@ -126,6 +141,11 @@ function ExploreView({ index, lang }) {
       surface();
     }
   }, [index, filteredKeys.length]);
+
+  const toggleReveal = useCallback(() => {
+    if (!current) return;
+    setRevealed(r => !r);
+  }, [current]);
 
   const script = LANGUAGES[lang].script;
   const versesInRange = current
@@ -177,35 +197,90 @@ function ExploreView({ index, lang }) {
         </aside>
 
         <div>
-          <div className="specimen">
-            <div className="specimen-meta">
-              <span><span className="dot"></span>Specimen · {LANGUAGES[lang].name}</span>
-              <span>{current ? 'Found in ' + versesInRange.length + ' verse' + (versesInRange.length === 1 ? '' : 's') : '—'}</span>
-            </div>
-
-            <div className="specimen-word-wrap">
-              {current ? (
-                <div className="specimen-word" data-script={script}>{current.word}</div>
-              ) : (
-                <div className="specimen-empty">No words match these filters. Try widening your range.</div>
-              )}
-            </div>
-
-            {current && (
-              <div className="concordance">
-                <div className="concordance-header">
-                  <div className="concordance-label">Where it appears · Chapters 1 – 18</div>
-                  <div className="concordance-count">
-                    <strong>{current.data.occurrences}</strong> total occurrence{current.data.occurrences === 1 ? '' : 's'}
-                  </div>
+          <div className="specimen-stage">
+            <div
+              className={'specimen ' + (revealed ? 'flipped ' : '') + (!current ? 'empty' : '')}
+              onClick={toggleReveal}
+              role="button"
+              aria-label={revealed ? 'Hide answer' : 'Reveal where it appears'}
+            >
+              {/* FRONT — the word */}
+              <div className="specimen-face front">
+                <div className="specimen-meta">
+                  <span><span className="dot"></span>Specimen · {LANGUAGES[lang].name}</span>
+                  <span>{current ? 'Frequency · ' + current.data.occurrences : '—'}</span>
                 </div>
-                <ChapterStrip verses={current.data.verses} from={from} to={to} />
+
+                <div className="specimen-word-wrap">
+                  {current ? (
+                    <FitText className="specimen-word" dataScript={script} max={120} min={24}>
+                      {current.word}
+                    </FitText>
+                  ) : (
+                    <div className="specimen-empty">No words match these filters. Try widening your range.</div>
+                  )}
+                </div>
+
+                {current && (
+                  <div className="flip-hint">
+                    <span className="pulse"></span>
+                    <span>Tap to reveal where it appears</span>
+                  </div>
+                )}
               </div>
-            )}
+
+              {/* BACK — the concordance */}
+              <div className="specimen-face back">
+                <div className="specimen-meta">
+                  <span><span className="dot"></span>Answer · Concordance</span>
+                  <span>{current ? versesInRange.length + ' verse' + (versesInRange.length === 1 ? '' : 's') + ' in range' : '—'}</span>
+                </div>
+
+                {current && (
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingTop: 16, paddingBottom: 16 }}>
+                    <div style={{
+                      fontFamily: 'var(--font-serif)',
+                      fontStyle: 'italic',
+                      color: 'var(--ink-2)',
+                      fontSize: 16,
+                      marginBottom: 24,
+                      textAlign: 'center'
+                    }}>
+                      <span data-script={script} style={{
+                        fontFamily: script === 'sanskrit' ? 'var(--font-devanagari)' : (script === 'kannada' ? 'var(--font-kannada)' : (script === 'tamil' ? 'var(--font-tamil)' : 'var(--font-serif)')),
+                        fontStyle: script === 'english' ? 'italic' : 'normal',
+                        fontSize: 'clamp(20px, 4vw, 30px)',
+                        fontWeight: 500,
+                        color: 'var(--ink)',
+                        display: 'block',
+                        marginBottom: 8,
+                        wordBreak: 'break-word',
+                        overflowWrap: 'anywhere'
+                      }}>{current.word}</span>
+                      appears in <strong style={{ fontWeight: 500, fontStyle: 'normal', color: 'var(--accent)' }}>{current.data.occurrences}</strong> verse{current.data.occurrences === 1 ? '' : 's'} across the Gītā.
+                    </div>
+
+                    <div className="concordance" style={{ marginTop: 0, paddingTop: 24 }}>
+                      <div className="concordance-header">
+                        <div className="concordance-label">Where it appears · Chapters 1 – 18</div>
+                        <div className="concordance-count">
+                          <strong>{current.data.occurrences}</strong> total
+                        </div>
+                      </div>
+                      <ChapterStrip verses={current.data.verses} from={from} to={to} />
+                    </div>
+                  </div>
+                )}
+
+                <div className="flip-hint">
+                  <span>Tap card to flip back · scroll for verses</span>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {current && versesInRange.length > 0 && (
-            <div className="verses">
+          {current && revealed && versesInRange.length > 0 && (
+            <div className="verses fade-in">
               {versesInRange.map((v, i) => (
                 <VerseItem key={i} verse={v} word={current.word} script={script} />
               ))}
@@ -265,8 +340,8 @@ const selectStyle = {
   fontSize: 12,
   fontWeight: 500,
   color: 'var(--ink)',
-  background: 'var(--paper-2)',
-  border: '1px solid var(--rule)',
+  background: 'var(--paper-3)',
+  border: '1px solid var(--rule-strong)',
   borderRadius: 4,
   padding: '6px 8px',
   outline: 'none'

@@ -181,9 +181,64 @@ function VerseItem({ verse, word, script }) {
   );
 }
 
+// Auto-fit text — measures natural width vs container, scales font down to fit.
+// If still overflows at min size, falls back to wrapping rather than clipping.
+function FitText({ children, max = 120, min = 28, className = '', dataScript, style }) {
+  const ref = React.useRef(null);
+
+  React.useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el || !el.parentElement) return;
+
+    const fit = () => {
+      // reset: try max, single-line
+      el.style.fontSize = max + 'px';
+      el.style.whiteSpace = 'nowrap';
+      el.style.wordBreak = '';
+      el.style.overflowWrap = '';
+
+      const available = el.parentElement.clientWidth;
+      if (!available) return;
+      let natural = el.scrollWidth;
+
+      if (natural > available) {
+        // shrink proportionally
+        const ratio = (available / natural) * 0.94;
+        const newSize = Math.max(min, Math.floor(max * ratio));
+        el.style.fontSize = newSize + 'px';
+
+        // if even at min size it still overflows on one line,
+        // permit wrapping so the word stays inside the card
+        if (el.scrollWidth > available) {
+          el.style.whiteSpace = 'normal';
+          el.style.wordBreak = 'break-word';
+          el.style.overflowWrap = 'anywhere';
+          el.style.fontSize = min + 'px';
+        }
+      }
+    };
+
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe(el.parentElement);
+    return () => ro.disconnect();
+  }, [children, max, min]);
+
+  return (
+    <div
+      ref={ref}
+      className={className}
+      data-script={dataScript}
+      style={{ whiteSpace: 'nowrap', maxWidth: '100%', ...(style || {}) }}
+    >
+      {children}
+    </div>
+  );
+}
+
 Object.assign(window, {
   LANGUAGES, CHAPTER_NAMES,
   TopBar, Footer, Loading,
   tokenize, buildIndex, escapeRegExp, highlightVerse,
-  ChapterStrip, VerseItem
+  ChapterStrip, VerseItem, FitText
 });
